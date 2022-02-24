@@ -1,16 +1,15 @@
 from stackapi import StackAPI
+from helper import write_to_json_file
 import json
 SITE = StackAPI('stackoverflow')
 
 def get_questions():
-    with open('comment_file.json', "x+") as file:
-        questions = SITE.fetch('questions', order="desc", tagged="r", sort="hot")
-        file.write(json.dumps(questions))
+    questions = SITE.fetch('questions', order="desc", tagged="r", sort="hot")
+    write_to_json_file(questions, 'comment_file.json')
 
 def get_answers():
-    with open('answers.json', 'x+') as file:
-        answers = SITE.fetch('questions/{ids}/answers', ids=[71213139, 71212278])
-        file.write(json.dumps(answers))
+    answers = SITE.fetch('questions/{ids}/answers', ids=[71213139, 71212278])
+    write_to_json_file(answers, 'answers.json')
 
 def get_comment_ids():
     comment_ids = []
@@ -19,4 +18,4 @@ def get_comment_ids():
         comment_ids.append(comment["comment_id"])
     print(comment_ids)
 
-get_comment_ids()
+get_questions()
