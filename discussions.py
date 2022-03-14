@@ -1,11 +1,12 @@
 from stackapi import StackAPI
-from helper import write_to_json_file
-import json
+from helper import write_to_json_file, sort_by_views
 SITE = StackAPI('stackoverflow')
 
 def get_questions():
-    questions = SITE.fetch('questions', order="desc", tagged="r", sort="hot")
-    write_to_json_file(questions, 'comment_file.json')
+    questions = SITE.fetch('questions', order="desc", tagged="r")
+    sorted_questions = sort_by_views(questions["items"])
+    print(f"Sorted: {sorted_questions[0]}")
+    write_to_json_file(sorted_questions, 'question_file.json')
 
 def get_answers():
     answers = SITE.fetch('questions/{ids}/answers', ids=[71213139, 71212278])

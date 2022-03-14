@@ -18,7 +18,6 @@ def get_key_by_views(obj):
     return obj['view_count']
 
 def sort_by_views(list):
-    print(f"Before: {list}")
     list.sort(key=get_key_by_views)
-    print(f"After: {list}")
+    return list
 
