@@ -1,6 +1,5 @@
 import csv
 import json
-import jq
 from math import ceil
 from stackapi import StackAPI
 from helper import sort_by_answers, write_to_json_file, write_to_csv_file, convert_from_epoch, just_write
@@ -17,27 +16,27 @@ def get_questions():
 def get_answers(questions):
     ids = []
     answers = []
-    answers_count = 0
+    answer_count = 0
     for question in questions:
-        answer_count = question.get('answer_count')
-        if answer_count > 0:
-            answers_count += answer_count
-            ids.append(question.get('question_id'))
-    print(f"Expecting {answers_count} answers.")
-    total_batches = ceil(answers_count / 100)
-    batch_count = 1
-    print(f"Batch started\n{total_batches} batches will be processed.\nCurrent batch count {batch_count}")
-    while batch_count < total_batches:
-        batch_start = batch_count*100 - 100
-        batch_end = batch_count*100-1
-        batch_ids = ids[batch_start:batch_end]
-        batch_answers = SITE.fetch('questions/{ids}/answers', ids=batch_ids, filter="!nKzQURF6Y5", pagesize=50, pages=2)
-        print(f"Batch count: {batch_count}\n{batch_answers.get('items')}")
-        for item in batch_answers.get('items'):
-            answers.append(item)
-        batch_count += 1
-    print(f"Expected {answers_count} answers. Total is {len(answers)} answers.")
+        answer_count += question.get('answer_count')
+        ids.append(question.get('question_id'))
+    print(f"Expecting {answer_count} answers.")
+    first_batch_answers = SITE.fetch('questions/{ids}/answers', ids=ids[0:100], filter="withbody")
+    second_batch_answers = SITE.fetch('questions/{ids}/answers', ids=ids[101:200], filter="withbody")
+    batch_answers = { **first_batch_answers, **second_batch_answers }
+    for item in batch_answers.get('items'):
+        answers.append(item)
     write_to_json_file(answers, 'answers.json')
+
+def locate_question_author(question_id):
+    with open('question_file.json', 'r') as raw_questions:
+        questions = json.load(raw_questions)
+        # print(f'Looking for {question_id}')
+        for question in questions:
+            if question['question_id'] == question_id:
+                # print("Question ID found!")
+                # print(f"Owner: {question['owner']['display_name']}\nUser ID: {question['owner']['user_id']}")
+                return question['owner']['user_id'], question['owner']['display_name']
 
 def format_rows(data, data_type):
     formatted_data = []
@@ -55,12 +54,12 @@ def get_comment_ids():
         comment_ids.append(comment["comment_id"])
     print(comment_ids)
 
-get_questions()
-
+# questions = get_questions()
+locate_question_author(1097367)
 # with open('question_file.json', 'r') as questions:
-#     # get_answers(json.load(questions))
-#     formatted_questions = format_rows(json.load(questions), "question")
-#     write_to_csv_file(headers, formatted_questions, 'stack_overflow.csv')
+#     get_answers(json.load(questions))
+#   formatted_questions = format_rows(json.load(questions), "question")
+#   write_to_csv_file(headers, formatted_questions, 'stack_overflow.csv')
 
 # with open('answers.json', 'r') as answers:
 #     formatted_answers = format_rows(json.load(answers), "answer")
