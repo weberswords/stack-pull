@@ -10,5 +10,6 @@ def get_site():
     return SITE
 
 def test_connection():
+    SITE = get_site()
     response = SITE.fetch('me')
     print(response)
