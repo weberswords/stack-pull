@@ -52,7 +52,14 @@ def sort_by_views(list):
 def sort_by_answers(list):
     list.sort(key=get_key_by_answer_count, reverse=True)
     return list
-
 def convert_from_epoch(epoch_time):
     return datetime.datetime.fromtimestamp(epoch_time)
+
+def get_next_page(page):
+    return int(page) + 1
+
+def get_count_of_json(file):
+    with open(file, "r") as file_to_count:
+        answers = json.load(file_to_count)
+        print(len(answers))
 
