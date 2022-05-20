@@ -55,7 +55,7 @@ def sort_by_answers(list):
 def convert_from_epoch(epoch_time):
     return datetime.datetime.fromtimestamp(epoch_time)
 
-def get_next_page(page):
+def calculate_next_page(page):
     return int(page) + 1
 
 def get_count_of_json(file):
